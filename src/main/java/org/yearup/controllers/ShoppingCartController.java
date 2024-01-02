@@ -29,30 +29,31 @@ public class ShoppingCartController{
 
     // a shopping cart requires
     // each method in this controller requires a Principal object as a parameter
-    @GetMapping("/getCart")
-    public ShoppingCart getCart(Principal principal)
-    {
-        try
-        {
-            System.out.println("good");
-     // get the currently logged in username
-            String userName = principal.getName();
+    @GetMapping("/cart")
+    public ShoppingCart getCart(Principal principal) {
+        try {
+            if (principal != null) {
+                System.out.println("good");
 
-            // find database user by userId
-            User user = userDao.getByUserName(userName);
-            int userId = user.getId();
+                String userName = principal.getName();
 
-            System.out.println("good2");
+                // find database user by userId
+                User user = userDao.getByUserName(userName);
+                int userId = user.getId();
 
-            return shoppingCartDao.getByUserId(userId);
-        }
-        catch(Exception e)
-        {
+                System.out.println("good2");
+                return shoppingCartDao.getByUserId(userId);
+            } else {
+                System.out.println("error before catch");
+            }
+        } catch (Exception e) {
             System.out.println("Error");
+            System.out.println(e);
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Oops... our bad.");
         }
-    }
 
+        return null;
+    }
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be added
     @PostMapping("/products/{productId}")
