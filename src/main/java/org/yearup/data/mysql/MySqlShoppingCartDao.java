@@ -27,29 +27,30 @@ public class MySqlShoppingCartDao implements ShoppingCartDao {
     @Override
     public ShoppingCart getByUserId(int userId) throws SQLException {
         Map<Integer, ShoppingCartItem> items = new HashMap<>();
+
         try (Connection connection = dataSource.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
                      "SELECT * FROM shopping_cart WHERE user_id = ?")) {
             preparedStatement.setInt(1, userId);
+
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int productId = resultSet.getInt("product_id");
+                    int quantity = resultSet.getInt("quantity"); // Assuming you have a quantity column in the shopping_cart table
                     Product product = productDao.getById(productId);
-                    ShoppingCartItem item = new ShoppingCartItem(product, 1);
+                    ShoppingCartItem item = new ShoppingCartItem(product, quantity);
                     items.put(productId, item);
-
                 }
             }
         } catch (SQLException e) {
+            // Handle the exception appropriately, log or rethrow if needed
             e.printStackTrace();
+            throw e;
         }
 
-
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.setItems(items);
-
-        return shoppingCart;
+        return new ShoppingCart(items);
     }
+
 
 
     @Override

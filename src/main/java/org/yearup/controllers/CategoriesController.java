@@ -31,8 +31,8 @@ public CategoriesController(CategoryDao categoryDao, ProductDao productDao){
     this.productDao = productDao;
 }
     // add the appropriate annotation for a get action
+
     @RequestMapping(path="/categories",method = RequestMethod.GET)
-    @PreAuthorize("permitAll()")
     public ArrayList<Category> getAll(){
 
 
