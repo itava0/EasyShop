@@ -29,5 +29,11 @@ build/
 
 ### VS Code ###
 .vscode/
+<<<<<<< HEAD
+
 
 C:\Users\HTPC2\pluralsight\workbook-9\Ebae\src\main\resources\application.properties
+
+=======
+src/main/resources/application.properties
+>>>>>>> desi
