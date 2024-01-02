@@ -4,16 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.yearup.data.CategoryDao;
 import org.yearup.models.Category;
+import org.yearup.models.Product;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.sql.*;
+import java.util.*;
 
 @Component
 public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
@@ -25,127 +20,12 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
     }
 
     @Override
-    public List<Category> getAllCategories(){
+    public ArrayList<Category> getAllCategories(){
 
         // get all categories
-        List<Category> categories = new List<Category>() {
+        ArrayList<Category> categories = new ArrayList<>();
 
 
-            @Override
-            public int size() {
-                return 0;
-            }
-
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean contains(Object o) {
-                return false;
-            }
-
-            @Override
-            public Iterator<Category> iterator() {
-                return null;
-            }
-
-            @Override
-            public Object[] toArray() {
-                return new Object[0];
-            }
-
-            @Override
-            public <T> T[] toArray(T[] a) {
-                return null;
-            }
-
-            @Override
-            public boolean add(Category category) {
-                return false;
-            }
-
-            @Override
-            public boolean remove(Object o) {
-                return false;
-            }
-
-            @Override
-            public boolean containsAll(Collection<?> c) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends Category> c) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(int index, Collection<? extends Category> c) {
-                return false;
-            }
-
-            @Override
-            public boolean removeAll(Collection<?> c) {
-                return false;
-            }
-
-            @Override
-            public boolean retainAll(Collection<?> c) {
-                return false;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @Override
-            public Category get(int index) {
-                return null;
-            }
-
-            @Override
-            public Category set(int index, Category element) {
-                return null;
-            }
-
-            @Override
-            public void add(int index, Category element) {
-
-            }
-
-            @Override
-            public Category remove(int index) {
-                return null;
-            }
-
-            @Override
-            public int indexOf(Object o) {
-                return 0;
-            }
-
-            @Override
-            public int lastIndexOf(Object o) {
-                return 0;
-            }
-
-            @Override
-            public ListIterator<Category> listIterator() {
-                return null;
-            }
-
-            @Override
-            public ListIterator<Category> listIterator(int index) {
-                return null;
-            }
-
-            @Override
-            public List<Category> subList(int fromIndex, int toIndex) {
-                return null;
-            }
-        };
 
 
         try(
@@ -169,34 +49,96 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao
             e.printStackTrace();
         }
 
-
+        System.out.println("All Categories");
         return categories;
     }
 
     @Override
-    public Category getById(int categoryId)
-    {
+    public Category getById(int categoryId) {
         // get category by id
-        return null;
+        ArrayList<Category> categories = new ArrayList<>();
+        String sql = "SELECT * FROM categories " +
+                " WHERE category_id = ? ";
+
+        Category category = null;
+        try (Connection connection = getConnection()) {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, categoryId);
+
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                category = new Category(
+                        resultSet.getInt("category_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description")
+                );
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return category;
+
+
     }
 
     @Override
     public Category create(Category category)
     {
         // create a new category
-        return null;
+        String sql = "INSERT INTO categories(name,description) VALUES (?,?)";
+        try (Connection connection = getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+        ) {
+            statement.setString(1,category.getName());
+            statement.setString(2,category.getDescription());
+            statement.executeUpdate();
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+        return category;
+
     }
 
     @Override
     public void update(int categoryId, Category category)
     {
         // update category
+        String sql = "UPDATE categories SET name = ? , description = ? WHERE category_id = ?";
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1,category.getName());
+            statement.setString(2,category.getDescription());
+            statement.setInt(3,categoryId);
+            statement.executeUpdate();
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void delete(int categoryId)
     {
         // delete category
+        String sql = "DELETE FROM categories " +
+                " WHERE category_id = ?;";
+        try (Connection connection = getConnection())
+        {
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, categoryId);
+
+            statement.executeUpdate();
+        }
+        catch (SQLException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
     private Category mapRow(ResultSet row) throws SQLException
