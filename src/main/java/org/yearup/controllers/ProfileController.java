@@ -40,11 +40,10 @@ public class ProfileController {
         }
     }
 
-    @RequestMapping(path = "/profile/{id}", method = RequestMethod.PUT)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public ResponseEntity<String> updateProfile(@PathVariable int userId, @RequestBody Profile profile) {
+    @RequestMapping(path = "/profile", method = RequestMethod.PUT)
+    public ResponseEntity<String> updateProfile(Principal principal, @RequestBody Profile profile) {
         try {
-            Profile updatedProfile = profileDao.update(userId, profile);
+            Profile updatedProfile = profileDao.update(principal.getName(), profile);
             if (updatedProfile != null) {
                 return new ResponseEntity<>("Profile updated successfully", HttpStatus.OK);
             } else {
