@@ -78,7 +78,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
     }
 
     @Override
-    public Profile update(int userId, Profile profile) {
+    public Profile update(String userName, Profile profile) {
         String sql = "UPDATE profiles " +
                 "SET first_name = ?, " +
                 "    last_name = ?, " +
@@ -88,12 +88,11 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
                 "    city = ?, " +
                 "    state = ?, " +
                 "    zip = ? " +
-                "WHERE user_id = ?";
+                "WHERE first_name = ?";
 
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            // Set the values for the placeholders in the SQL query
             ps.setString(1, profile.getFirstName());
             ps.setString(2, profile.getLastName());
             ps.setString(3, profile.getPhone());
@@ -102,7 +101,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
             ps.setString(6, profile.getCity());
             ps.setString(7, profile.getState());
             ps.setString(8, profile.getZip());
-            ps.setInt(9, userId);
+            ps.setString(9, userName);
 
             int rowsUpdated = ps.executeUpdate();
 
