@@ -8,6 +8,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ProfileDao;
 import org.yearup.models.Profile;
 
+import java.security.Principal;
+
 @CrossOrigin(origins = "http://localhost:63342")
 @RestController
 public class ProfileController {
@@ -19,10 +21,10 @@ public class ProfileController {
         this.profileDao = profileDao;
     }
 
-    @RequestMapping(value = "/profile/{userId}", method = RequestMethod.GET)
-    public ResponseEntity<Profile> getProfile(@PathVariable int userId) {
+    @RequestMapping(value = "/profile", method = RequestMethod.GET)
+    public ResponseEntity<Profile> getProfile(Principal principal) {
         try {
-            Profile profile = profileDao.getProfile(userId);
+            Profile profile = profileDao.getProfile(principal.getName());
 
             if (profile == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found");
