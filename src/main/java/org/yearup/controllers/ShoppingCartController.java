@@ -13,7 +13,7 @@ import org.yearup.models.User;
 import java.security.Principal;
 
 // convert this class to a REST controller
-// only logged in users should have access to these actions
+// only logged-in users should have access to these actions
 @CrossOrigin(origins = "http://localhost:63342")
 @RestController
 public class ShoppingCartController{
