@@ -2,10 +2,7 @@ package org.yearup.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.ProductDao;
 import org.yearup.data.ShoppingCartDao;
@@ -17,6 +14,7 @@ import java.security.Principal;
 
 // convert this class to a REST controller
 // only logged in users should have access to these actions
+@CrossOrigin(origins = "http://localhost:63342")
 @RestController
 public class ShoppingCartController{
     @Autowired
