@@ -54,16 +54,24 @@ public class ShoppingCartController{
     }
     // add a POST method to add a product to the cart - the url should be
     // https://localhost:8080/cart/products/15 (15 is the productId to be added
-    @PostMapping("/products/{productId}")
+    @PostMapping("cart/products/{productId}")
     public ShoppingCart addToCart(@PathVariable int productId, Principal principal) {
-
         try {
+            if (principal == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated");
+            }
+
             String userName = principal.getName();
             User user = userDao.getByUserName(userName);
+
+            if (user == null) {
+                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found");
+            }
+
             int userId = user.getId();
             return shoppingCartDao.addProductToCart(userId, productId);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to add product to cart.", e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to add product to cart :.", e);
         }
     }
 
