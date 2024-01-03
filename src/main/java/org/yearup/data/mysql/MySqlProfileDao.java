@@ -48,7 +48,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
     }
 
     @Override
-    public Profile showProfile(int userId) {
+    public Profile getProfile(int userId) {
         String sql = "SELECT * FROM profiles WHERE user_id = ?";
 
         try (Connection connection = getConnection();

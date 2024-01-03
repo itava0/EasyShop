@@ -22,7 +22,7 @@ public class ProfileController {
     @RequestMapping(value = "/profile/{userId}", method = RequestMethod.GET)
     public ResponseEntity<Profile> getProfile(@PathVariable int userId) {
         try {
-            Profile profile = profileDao.showProfile(userId);
+            Profile profile = profileDao.getProfile(userId);
 
             if (profile == null) {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found");
