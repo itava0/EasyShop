@@ -26,6 +26,7 @@ public class MySqlShoppingCartDao implements ShoppingCartDao {
     private ProductDao productDao;
     @Override
     public ShoppingCart getByUserId(int userId) throws SQLException {
+
         Map<Integer, ShoppingCartItem> items = new HashMap<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -36,14 +37,14 @@ public class MySqlShoppingCartDao implements ShoppingCartDao {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     int productId = resultSet.getInt("product_id");
-                    int quantity = resultSet.getInt("quantity"); // Assuming you have a quantity column in the shopping_cart table
+                    int quantity = resultSet.getInt("quantity");
                     Product product = productDao.getById(productId);
                     ShoppingCartItem item = new ShoppingCartItem(product, quantity);
                     items.put(productId, item);
                 }
             }
         } catch (SQLException e) {
-            // Handle the exception appropriately, log or rethrow if needed
+
             e.printStackTrace();
             throw e;
         }
@@ -55,26 +56,77 @@ public class MySqlShoppingCartDao implements ShoppingCartDao {
 
     @Override
     public ShoppingCart addProductToCart(int userId, int productId) {
-        return null;
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "INSERT INTO shopping_cart (user_id, product_id, quantity) VALUES (?, ?, 1) ON DUPLICATE KEY UPDATE quantity = quantity + 1")) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.setInt(2, productId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        try {
+            return getByUserId(userId);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    @Override
-    public void updateCartItemQuantity(int userId, int productId, int quantity) {
 
-    }
-
-    @Override
-    public void removeProductFromCart(int userId, int productId) {
-
-    }
 
     @Override
     public void clearCart(int userId) {
-
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(
+                     "DELETE FROM shopping_cart WHERE user_id = ?")) {
+            preparedStatement.setInt(1, userId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to clear cart for user: " + userId, e);
+        }
     }
+
 
     @Override
     public List<Product> getCartItemsByUserId(int userId) {
         return null;
     }
+
+
+
+    @Override
+    public ShoppingCart updateCartItem(int userId, int productId, ShoppingCartItem shoppingCartItem) {
+        try {
+            ShoppingCart shoppingCart = getByUserId(userId);
+
+            if (shoppingCart == null) {
+                throw new RuntimeException("Shopping cart not found for user: " + userId);
+            }
+
+            ShoppingCartItem matchedItem = shoppingCart.getItems().get(productId);
+
+            if (matchedItem != null) {
+                matchedItem.setQuantity(shoppingCartItem.getQuantity());
+                try (Connection connection = dataSource.getConnection();
+                     PreparedStatement preparedStatement = connection.prepareStatement(
+                             "UPDATE shopping_cart SET quantity = ? WHERE user_id = ? AND product_id = ?")) {
+                    preparedStatement.setInt(1, matchedItem.getQuantity());
+                    preparedStatement.setInt(2, userId);
+                    preparedStatement.setInt(3, productId);
+                    preparedStatement.executeUpdate();
+                }
+
+            } else {
+                throw new RuntimeException("Product not found in the shopping cart: " + productId);
+            }
+
+            return shoppingCart;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
