@@ -100,7 +100,7 @@ public class ShoppingCartController{
         }
     }
 
-    @DeleteMapping("/deletecart")
+    @DeleteMapping("/cart")
     public void clearCart(Principal principal) {
         try {
             if (principal == null) {
