@@ -4,7 +4,7 @@ The homepage displays all of the products that can be filtered according to user
 The profile page enables the user to update the profile information.
 The shopping cart displays the products that the user added, it shows the price of the item and the quantity. 
 If the user decides to clear the cart they also have that option.
-At the end of the whole process they can logout to keep their information safe.
+When they are finished with the process they can logout to keep their information safe.
 
 
 **HOMEPAGE**
