@@ -121,6 +121,4 @@ public class ShoppingCartController{
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to clear cart.", e);
         }
     }
-
-
 }
