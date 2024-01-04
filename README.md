@@ -1,7 +1,7 @@
 Ebae is a fully functional ecommerce API and site.
 There are 3 pages to access, the homepage, profile and the cart.
 The homepage displays all of the products that can be filtered according to user preference and are able to add the product to their cart.
-The profile page enables the user to update the profile information of the current user.
+The profile page enables the user to update the profile information.
 The shopping cart displays the products that the user added, it shows the price of the item and the quantity. 
 If the user decides to clear the cart they also have that option.
 At the end of the whole process they can logout to keep their information safe.
