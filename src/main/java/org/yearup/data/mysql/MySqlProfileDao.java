@@ -49,7 +49,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
 
     @Override
     public Profile getProfile(String userName) {
-        String sql = "SELECT * FROM profiles WHERE first_name = ?";
+        String sql = "SELECT * FROM profiles WHERE user_id = (SELECT user_id FROM users WHERE username = ?)";
 
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -88,7 +88,7 @@ public class MySqlProfileDao extends MySqlDaoBase implements ProfileDao
                 "    city = ?, " +
                 "    state = ?, " +
                 "    zip = ? " +
-                "WHERE first_name = ?";
+                "WHERE user_id = (SELECT user_id FROM users WHERE username = ?)";
 
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
